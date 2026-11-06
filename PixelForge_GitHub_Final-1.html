@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PixelForge Studio</title>
+<style>
+:root{--purple:#7057e8;--ink:#25243a;--muted:#77768a;--line:#e9e8ef;--panel:#fff;--bg:#f6f6fa}
+*{box-sizing:border-box}body{margin:0;font:14px Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial;color:var(--ink);background:var(--bg)}
+button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:9px;padding:9px 12px;background:#f0eefb;color:#4d3dc0;font-weight:600}
+button.primary{background:var(--purple);color:#fff}button.ghost{background:transparent;color:var(--muted)}button:disabled{opacity:.45;cursor:not-allowed}
+.top{height:62px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 18px;position:sticky;top:0;z-index:5}
+.brand{font-size:19px;font-weight:850;letter-spacing:-.7px}.brand span{color:var(--purple)}.projectname{border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:180px;color:var(--ink);background:white}.spacer{flex:1}.status{font-size:12px;color:var(--muted)}
+.app{display:grid;grid-template-columns:76px 245px minmax(320px,1fr) 280px;height:calc(100vh - 62px);min-height:570px}
+.rail{background:#fff;border-right:1px solid var(--line);display:flex;align-items:center;flex-direction:column;padding:12px 6px;gap:8px}
+.rail button{width:62px;height:62px;background:transparent;color:#777;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:600}
+.rail button.active,.rail button:hover{background:#f1efff;color:var(--purple)}.ico{font-size:21px}
+.side{background:#fff;border-right:1px solid var(--line);padding:18px;overflow:auto}.side h3{margin:0 0 5px;font-size:17px}.sub{color:var(--muted);font-size:12px;line-height:1.5;margin:0 0 16px}
+.field{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px;background:#fff;color:var(--ink);margin:6px 0 12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.template{border:1px solid var(--line);border-radius:10px;padding:8px;background:white;text-align:left;color:var(--ink);font-size:12px}.template .thumb{height:86px;border-radius:7px;margin-bottom:7px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:16px;padding:8px}
+.sectionlabel{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#999;margin:16px 0 8px;font-weight:700}
+.workspace{display:flex;flex-direction:column;min-width:0;overflow:hidden}.toolbar{height:54px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#fafafd;border-bottom:1px solid var(--line)}.toolbar button{padding:7px 10px}.zoom{font-size:12px;color:var(--muted);margin-left:auto}
+.stage{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:30px;background-color:#f1f1f6;background-image:linear-gradient(45deg,#e8e8ef 25%,transparent 25%),linear-gradient(-45deg,#e8e8ef 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e8e8ef 75%),linear-gradient(-45deg,transparent 75%,#e8e8ef 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0}
+#canvas{width:600px;height:600px;max-width:none;background:white;position:relative;box-shadow:0 12px 35px #25243a20;overflow:hidden;transform-origin:center center}
+.obj{position:absolute;min-width:30px;min-height:24px;padding:5px;cursor:move;user-select:none;touch-action:none;outline:1px dashed transparent;white-space:pre-wrap;overflow-wrap:anywhere}
+.obj.selected{outline:1px solid var(--purple)}.obj img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}.shape{width:100%;height:100%;min-height:50px}
+.inspector{background:#fff;border-left:1px solid var(--line);padding:17px;overflow:auto}.inspector h3{font-size:16px;margin:0 0 5px}.inspector label{font-size:12px;color:#68677a;display:block;margin-top:12px}.inspector input,.inspector textarea,.inspector select{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;margin-top:5px;background:#fff;color:var(--ink)}.inspector textarea{min-height:74px;resize:vertical}.rowbtn{display:flex;gap:7px;margin-top:12px}.rowbtn>*{flex:1}
+.pages{height:70px;border-top:1px solid var(--line);background:#fff;display:flex;align-items:center;gap:9px;padding:10px 16px;overflow:auto}.page{min-width:44px;height:46px;border:1px solid var(--line);border-radius:7px;background:#fff}.page.active{border:2px solid var(--purple)}.hint{font-size:12px;color:var(--muted)}
+.panel-hidden{display:none!important}.notice{background:#f5f2ff;border:1px solid #e5dfff;border-radius:9px;padding:10px;font-size:12px;line-height:1.5;color:#5547a8;margin:10px 0}
+@media(max-width:1050px){.app{grid-template-columns:66px 210px minmax(280px,1fr)}.inspector{display:none}}
+@media(max-width:700px){.top{padding:0 9px;gap:7px}.projectname{width:105px}.top .status{display:none}.app{grid-template-columns:58px minmax(0,1fr);height:calc(100dvh - 62px)}.rail{grid-column:1;grid-row:1}.side{grid-column:2;grid-row:1;display:none}.side.mobile-open{display:block;position:absolute;z-index:4;left:58px;top:62px;bottom:0;width:min(270px,calc(100vw - 58px));box-shadow:8px 0 24px #0002}.workspace{grid-column:2;grid-row:1}.toolbar{padding:0 7px;gap:4px}.toolbar button{font-size:11px;padding:7px}.stage{padding:15px;justify-content:flex-start;align-items:flex-start}#canvas{width:480px;height:480px;transform:scale(.72);transform-origin:top left;margin-right:-134px;margin-bottom:-134px}.pages{height:58px}.brand{font-size:16px}}
+</style></head>
+<body>
+<header class="top"><div class="brand">Pixel<span>Forge</span></div><input class="projectname" id="projectName" value="Untitled design" aria-label="Project name"><span class="status" id="saveStatus">Saved locally</span><div class="spacer"></div><button class="ghost" id="openProject">Open</button><button class="ghost" id="saveProject">Save</button><button class="primary" id="download">Download PNG</button></header>
+<div class="app">
+<nav class="rail">
+<button class="active" data-panel="templates"><span class="ico">▦</span>Design</button>
+<button data-panel="text"><span class="ico">T</span>Text</button>
+<button data-panel="elements"><span class="ico">◇</span>Shapes</button>
+<button data-panel="uploads"><span class="ico">↑</span>Uploads</button>
+</nav>
+<aside class="side" id="side">
+<div id="panel-templates"><h3>Design templates</h3><p class="sub">Start with a layout, then edit every item.</p><div class="grid2">
+<button class="template" data-template="poster"><div class="thumb" style="background:#241a48;color:white">MAKE<br>IT HAPPEN</div>Bold poster</button>
+<button class="template" data-template="sale"><div class="thumb" style="background:#ffdf73;color:#372400">BIG<br>SALE</div>Sale post</button>
+<button class="template" data-template="event"><div class="thumb" style="background:#d9f0e8;color:#154b42">YOU'RE<br>INVITED</div>Event invite</button>
+<button class="template" data-template="quote"><div class="thumb" style="background:#e8e1ff;color:#43318e">DREAM<br>BIG</div>Quote card</button>
+</div><div class="notice">Templates are editable starter layouts. Select an item on the page to change its text, colour, size and position.</div></div>
+<div id="panel-text" class="panel-hidden"><h3>Add text</h3><p class="sub">Add headings and captions to your design.</p><button class="primary" id="addHeading" style="width:100%">＋ Add a heading</button><button id="addBody" style="width:100%;margin-top:8px">＋ Add body text</button></div>
+<div id="panel-elements" class="panel-hidden"><h3>Elements</h3><p class="sub">Add simple shapes and decorative blocks.</p><div class="grid2"><button id="addRect">＋ Rectangle</button><button id="addCircle">＋ Circle</button><button id="addLine">＋ Line</button><button id="addStar">＋ Star</button></div></div>
+<div id="panel-uploads" class="panel-hidden"><h3>Uploads</h3><p class="sub">Add your own image files to the design.</p><input class="field" type="file" id="uploadFile" accept="image/*"><div class="hint">Tip: you can also drag an image file onto the canvas.</div></div>
+</div>
+</aside>
+<main class="workspace"><div class="toolbar"><button id="undo">↶</button><button id="redo">↷</button><button id="duplicate">Duplicate</button><button id="delete">Delete</button><span class="zoom">100% · Drag items to move</span></div><div class="stage" id="stage"><div id="canvas" aria-label="Design canvas"></div></div><div class="pages"><span class="hint">Pages</span><div id="pageButtons" style="display:flex;gap:7px"></div><button id="addPage">＋</button></div></main>
+<aside class="inspector" id="inspector"><h3>Item settings</h3><p class="sub">Select an item on the canvas to edit it.</p><div id="emptyInspector" class="hint">Nothing selected</div><div id="editControls" class="panel-hidden">
+<label>Text</label><textarea id="editText"></textarea>
+<label>Font size</label><input id="editSize" type="number" min="8" max="180">
+<label>Text / shape colour</label><input id="editColor" type="color">
+<label>Background colour</label><input id="editBg" type="color">
+<label>Width</label><input id="editWidth" type="number" min="20" max="1000">
+<label>Height</label><input id="editHeight" type="number" min="20" max="1000">
+<div class="rowbtn"><button id="bringFront">Bring forward</button><button id="sendBack">Send backward</button></div>
+</div></aside>
+</div>
+<input type="file" id="projectFile" accept=".json,application/json" hidden>
+<script>
+const canvas=document.getElementById('canvas'), pages=[], history=[], future=[];let pageIndex=0,selected=null,drag=null,historyLock=false;
+function newPage(){return {items:[]}}
+pages.push(newPage());
+function snapshot(){if(historyLock)return;history.push(JSON.stringify(pages));if(history.length>40)history.shift();future.length=0;document.getElementById('saveStatus').textContent='Unsaved changes'}
+function item(type,props={}){return {id:crypto.randomUUID(),type,x:40,y:40,w:220,h:80,text:'Text',size:34,color:'#242238',bg:'transparent',...props}}
+function add(it){snapshot();pages[pageIndex].items.push(it);render();select(it.id)}
+function render(){canvas.innerHTML='';pages[pageIndex].items.forEach(it=>{let el=document.createElement('div');el.className='obj'+(selected===it.id?' selected':'');el.dataset.id=it.id;Object.assign(el.style,{left:it.x+'px',top:it.y+'px',width:it.w+'px',height:it.h+'px',fontSize:it.size+'px',color:it.color,background:it.bg,zIndex:it.z||1,fontWeight:it.bold?'800':'500',textAlign:it.align||'left',borderRadius:it.type==='circle'?'50%':it.type==='star'?'12px':'0'});if(it.type==='image'){let img=document.createElement('img');img.src=it.src;el.append(img)}else if(it.type==='line'){el.style.height='4px';el.style.minHeight='4px';el.style.background=it.color}else if(it.type==='star'){el.textContent='★';el.style.display='grid';el.style.placeItems='center';el.style.fontSize=Math.min(it.w,it.h)+'px';el.style.background='transparent'}else el.textContent=it.text||'';el.addEventListener('pointerdown',startDrag);el.addEventListener('click',e=>{e.stopPropagation();select(it.id)});canvas.append(el)});drawPages()}
+function drawPages(){let p=document.getElementById('pageButtons');p.innerHTML='';pages.forEach((_,i)=>{let b=document.createElement('button');b.className='page'+(i===pageIndex?' active':'');b.textContent=i+1;b.onclick=()=>{pageIndex=i;selected=null;render();updateInspector()};p.append(b)})}
+function select(id){selected=id;render();updateInspector()}
+function current(){return pages[pageIndex].items.find(x=>x.id===selected)}
+function updateInspector(){let it=current();document.getElementById('emptyInspector').classList.toggle('panel-hidden',!!it);document.getElementById('editControls').classList.toggle('panel-hidden',!it);if(!it)return;document.getElementById('editText').value=it.text||'';document.getElementById('editSize').value=it.size||30;document.getElementById('editColor').value=validColor(it.color);document.getElementById('editBg').value=validColor(it.bg);document.getElementById('editWidth').value=it.w;document.getElementById('editHeight').value=it.h}
+function validColor(c){return /^#[0-9a-f]{6}$/i.test(c||'')?c:'#ffffff'}
+function change(k,v){let it=current();if(!it)return;snapshot();it[k]=v;render();updateInspector()}
+['editText','editSize','editColor','editBg','editWidth','editHeight'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{let map={editText:'text',editSize:'size',editColor:'color',editBg:'bg',editWidth:'w',editHeight:'h'};let v=e.target.value;if(['size','w','h'].includes(map[id]))v=Number(v);let it=current();if(it){it[map[id]]=v;render()}}));
+function startDrag(e){if(e.button!==0)return;let id=e.currentTarget.dataset.id;select(id);let it=current();drag={id,x:e.clientX,y:e.clientY,ix:it.x,iy:it.y};e.currentTarget.setPointerCapture(e.pointerId);e.currentTarget.addEventListener('pointermove',moveDrag);e.currentTarget.addEventListener('pointerup',endDrag,{once:true})}
+function moveDrag(e){if(!drag)return;let it=current();if(!it||it.id!==drag.id)return;let scale=canvas.getBoundingClientRect().width/600;it.x=Math.max(0,Math.min(570,drag.ix+(e.clientX-drag.x)/scale));it.y=Math.max(0,Math.min(570,drag.iy+(e.clientY-drag.y)/scale));let el=canvas.querySelector(`[data-id="${it.id}"]`);if(el){el.style.left=it.x+'px';el.style.top=it.y+'px'}}
+function endDrag(){if(drag){snapshot();drag=null}}
+canvas.addEventListener('click',()=>{selected=null;render();updateInspector()});
+function addText(text,size){add(item('text',{text,size,w:360,h:100,bold:size>30}))}
+document.getElementById('addHeading').onclick=()=>addText('Your headline',48);document.getElementById('addBody').onclick=()=>addText('Add your message here',23);
+document.getElementById('addRect').onclick=()=>add(item('rect',{text:'',w:180,h:100,bg:'#8b78f4'}));document.getElementById('addCircle').onclick=()=>add(item('circle',{text:'',w:120,h:120,bg:'#ffbd66'}));document.getElementById('addLine').onclick=()=>add(item('line',{text:'',w:220,h:4,color:'#333333'}));document.getElementById('addStar').onclick=()=>add(item('star',{text:'',w:90,h:90,color:'#f2a900'}));
+document.querySelectorAll('[data-panel]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-panel]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('[id^=panel-]').forEach(x=>x.classList.add('panel-hidden'));document.getElementById('panel-'+b.dataset.panel).classList.remove('panel-hidden');document.getElementById('side').classList.add('mobile-open')});
+document.querySelectorAll('[data-template]').forEach(b=>b.onclick=()=>{snapshot();let t=b.dataset.template;let sets={poster:[item('text',{text:'MAKE IT HAPPEN',x:45,y:170,w:500,h:150,size:62,color:'#ffffff',bold:true}),item('text',{text:'Your next big idea starts here',x:50,y:345,w:450,h:65,size:24,color:'#e8e2ff'}),item('rect',{x:0,y:0,w:600,h:600,bg:'#241a48',z:0})],sale:[item('rect',{x:0,y:0,w:600,h:600,bg:'#ffdf73'}),item('text',{text:'BIG SALE',x:55,y:160,w:490,h:120,size:72,color:'#372400',bold:true}),item('text',{text:'UP TO 50% OFF',x:65,y:300,w:450,h:80,size:38,color:'#8d2c17',bold:true})],event:[item('rect',{x:0,y:0,w:600,h:600,bg:'#d9f0e8'}),item('text',{text:"YOU'RE INVITED",x:45,y:155,w:510,h:100,size:53,color:'#154b42',bold:true}),item('text',{text:'Add your event details\\nDate · Time · Place',x:55,y:290,w:460,h:130,size:28,color:'#24685e'})],quote:[item('rect',{x:0,y:0,w:600,h:600,bg:'#e8e1ff'}),item('text',{text:'DREAM BIG.',x:55,y:190,w:490,h:110,size:65,color:'#43318e',bold:true}),item('text',{text:'Start small. Keep going.',x:60,y:320,w:450,h:70,size:27,color:'#6552b7'})]};pages[pageIndex].items=sets[t];selected=null;render();updateInspector()});
+document.getElementById('uploadFile').onchange=e=>{let f=e.target.files[0];if(f)readImage(f)};
+function readImage(f){let r=new FileReader();r.onload=()=>add(item('image',{src:r.result,w:260,h:190,text:''}));r.readAsDataURL(f)}
+canvas.addEventListener('dragover',e=>e.preventDefault());canvas.addEventListener('drop',e=>{e.preventDefault();let f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))readImage(f)});
+document.getElementById('delete').onclick=()=>{if(!selected)return;snapshot();pages[pageIndex].items=pages[pageIndex].items.filter(x=>x.id!==selected);selected=null;render();updateInspector()};
+document.getElementById('duplicate').onclick=()=>{let it=current();if(it)add({...it,id:crypto.randomUUID(),x:it.x+20,y:it.y+20})};
+document.getElementById('bringFront').onclick=()=>{let it=current();if(it){snapshot();it.z=(it.z||1)+1;render()}};
+document.getElementById('sendBack').onclick=()=>{let it=current();if(it){snapshot();it.z=0;render()}};
+document.getElementById('addPage').onclick=()=>{snapshot();pages.push(newPage());pageIndex=pages.length-1;selected=null;render();updateInspector()};
+function undo(){if(!history.length)return;future.push(JSON.stringify(pages));let old=JSON.parse(history.pop());pages.splice(0,pages.length,...old);pageIndex=Math.min(pageIndex,pages.length-1);selected=null;render();updateInspector()}
+function redo(){if(!future.length)return;history.push(JSON.stringify(pages));let old=JSON.parse(future.pop());pages.splice(0,pages.length,...old);pageIndex=Math.min(pageIndex,pages.length-1);selected=null;render();updateInspector()}
+document.getElementById('undo').onclick=undo;document.getElementById('redo').onclick=redo;
+function project(){return {app:'PixelForge Studio',version:1,name:document.getElementById('projectName').value,pages}}
+document.getElementById('saveProject').onclick=()=>{localStorage.setItem('pixelforge-project',JSON.stringify(project()));document.getElementById('saveStatus').textContent='Saved in this browser'};
+document.getElementById('openProject').onclick=()=>document.getElementById('projectFile').click();
+document.getElementById('projectFile').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let p=JSON.parse(r.result);if(!p.pages?.length)throw Error();pages.splice(0,pages.length,...p.pages);pageIndex=0;document.getElementById('projectName').value=p.name||'Untitled design';selected=null;render();updateInspector()}catch{alert('That project file could not be opened.')}};r.readAsText(f)};
+function downloadBlob(blob,name){let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+document.getElementById('download').onclick=async()=>{let old=selected;selected=null;render();try{let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><foreignObject width="600" height="600"><div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:600px;height:600px;background:white;overflow:hidden">${pages[pageIndex].items.map(it=>it.type==='image'?`<img src="${it.src}" style="position:absolute;left:${it.x}px;top:${it.y}px;width:${it.w}px;height:${it.h}px;object-fit:cover"/>`:`<div style="position:absolute;left:${it.x}px;top:${it.y}px;width:${it.w}px;height:${it.h}px;color:${it.color};background:${it.bg};font-size:${it.size}px;font-weight:${it.bold?800:500};white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(it.type==='star'?'★':it.type==='line'?'':it.text||'')}</div>`).join('')}</div></foreignObject></svg>`;let blob=new Blob([svg],{type:'image/svg+xml'}),url=URL.createObjectURL(blob),img=new Image();img.onload=()=>{let c=document.createElement('canvas');c.width=600;c.height=600;c.getContext('2d').drawImage(img,0,0);c.toBlob(b=>downloadBlob(b,'pixelforge-design.png'),'image/png');URL.revokeObjectURL(url)};img.onerror=()=>{alert('PNG export failed for this browser. Try saving the project as JSON.');URL.revokeObjectURL(url)};img.src=url}catch(e){alert('Export failed.')}};function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+let saved=localStorage.getItem('pixelforge-project');if(saved){try{let p=JSON.parse(saved);if(p.pages?.length){pages.splice(0,pages.length,...p.pages);document.getElementById('projectName').value=p.name||'Untitled design'}}catch{}}
+render();updateInspector();
+</script></body></html>
